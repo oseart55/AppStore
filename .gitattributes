@@ -1,0 +1,18 @@
+# Visual Studio 2008 wants CRLF in its project, solution and resource files.
+*.sln     text eol=crlf
+*.vcproj  text eol=crlf
+*.csproj  text eol=crlf
+*.rc      text eol=crlf
+*.bat     text eol=crlf
+
+*.c       text
+*.h       text
+*.cs      text
+*.md      text
+*.json    text
+*.pem     text
+
+*.ico     binary
+*.cab     binary
+*.dll     binary
+*.exe     binary

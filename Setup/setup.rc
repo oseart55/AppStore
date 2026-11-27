@@ -1,0 +1,15 @@
+// AppStoreSetup resources. Paths are relative to this file.
+#include "resource.h"
+
+// First icon = the exe's icon in File Explorer.
+IDI_SETUP      ICON    "..\\AppStore\\AppStore.ico"
+
+// Copied from Visual Studio 2008:
+// C:\Program Files (x86)\Microsoft.NET\SDK\CompactFramework\v3.5\WindowsCE\NETCFv35.wm.armv4i.cab
+IDR_NETCF      RCDATA  "redist\\NETCFv35.wm.armv4i.cab"
+
+// Build App Store (Release) first. Rebuild this project after every App Store build.
+IDR_APPSTORE   RCDATA  "..\\AppStore\\bin\\Release\\AppStore.exe"
+
+// Build ClockSync (Release) first; update CLOCKSYNC_TAG in resource.h to match.
+IDR_CLOCKSYNC  RCDATA  "..\\..\\ClockSync\\Windows Mobile 6 Professional SDK (ARMV4I)\\Release\\ClockSync.exe"

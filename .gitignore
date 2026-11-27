@@ -1,0 +1,25 @@
+# Build output
+bin/
+obj/
+Windows Mobile 6 Professional SDK*/
+*.pdb
+*.obj
+*.idb
+*.ilk
+*.exp
+*.res
+
+# Microsoft's .NET CF 3.5 installer: copy it in yourself (see Setup/redist/README.md)
+Setup/redist/*.cab
+
+# release.bat staging, Visual Studio 2008 per-user files
+release_files/
+*.ncb
+*.suo
+*.user
+*.aps
+
+# Leftovers
+*.old
+*.bak
+*.orig
