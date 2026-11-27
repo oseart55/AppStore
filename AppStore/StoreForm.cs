@@ -76,6 +76,7 @@ namespace AppStore
             left.MenuItems.Add(openItem);
             left.MenuItems.Add(notesItem);
             left.MenuItems.Add(Item("Show log", delegate { info.Text = Log.Tail(40); ScrollInfoToEnd(); }));
+            left.MenuItems.Add(Item("Send logs", delegate { SendLogs(); }));
             left.MenuItems.Add(Item("About", delegate { ShowAbout(); }));
             left.MenuItems.Add(Item("Exit", delegate { Close(); }));
             actionKey = Item("", delegate { DoAction(); });
@@ -446,6 +447,33 @@ namespace AppStore
             if (a == null || a.Installed == null) return;
             try { Process.Start(a.Installed.ExePath, ""); }
             catch (Exception ex) { Tell("Couldn't start " + a.Installed.ExePath + ": " + ex.Message); }
+        }
+
+        void SendLogs()
+        {
+            if (busy) return;
+            string repo = LogUpload.Repo;
+            if (repo == null) { Tell(LogUpload.SetupHelp); return; }
+
+            List<LogFile> files = LogUpload.FindNew(catalogApps);
+            if (files.Count == 0) { Tell("No new or changed logs to send."); return; }
+            int total = 0;
+            string names = "";
+            foreach (LogFile f in files) { total += f.Data.Length; names += "  " + f.Name + " (" + Installer.Kb(f.Data.Length) + ")\r\n"; }
+            string question = "Send " + files.Count + " log" + (files.Count == 1 ? "" : "s") + " (" + Installer.Kb(total) + ") to " +
+                repo + "?\r\n\r\n" + names + "\r\nThey go in the folder " + LogUpload.DeviceName + ".";
+            if (MessageBox.Show(question, "Send logs", MessageBoxButtons.OKCancel, MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button1) != DialogResult.OK) return;
+
+            busy = true;
+            UpdateActions();
+            Background(delegate
+            {
+                string message;
+                try { message = LogUpload.Send(files, delegate(string m) { Ui(delegate { info.Text = m; }); }); }
+                catch (Exception ex) { message = ex.Message; }
+                Ui(delegate { busy = false; UpdateActions(); Tell(message); });
+            });
         }
 
         void ShowNotes()

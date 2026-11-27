@@ -20,6 +20,8 @@ namespace AppStore
         public List<string> Assets = new List<string>();
         /// <summary>Files never overwritten once they exist (settings the user edits).</summary>
         public List<string> Keep = new List<string>();
+        /// <summary>Log files the app writes in its folder (wildcards), for "Send logs".</summary>
+        public List<string> Logs = new List<string>();
 
         // Filled in by the store.
         public ReleaseInfo Latest;
@@ -99,6 +101,7 @@ namespace AppStore
                 a.UninstallArgs = MiniJson.Str(d, "uninstall").Trim();
                 a.Assets = Strings(d, "assets");
                 a.Keep = Strings(d, "keep");
+                a.Logs = Strings(d, "logs");
                 apps.Add(a);
             }
             return apps;

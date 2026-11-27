@@ -102,6 +102,14 @@ namespace AppStore
             if (Token != null && (url.StartsWith("https://api.github.com/") || url.StartsWith("https://raw.githubusercontent.com/")))
                 req.AddHeader("Authorization", "token " + Token);
 
+            HttpsResponse r = Send(req);
+            CheckRateLimit(r);
+            return r;
+        }
+
+        /// <summary>Sends a request; throws IOException with a readable message for network problems.</summary>
+        public static HttpsResponse Send(HttpsRequest req)
+        {
             HttpsResponse r;
             try { r = Https.Send(req); }
             catch (HttpsException ex)
@@ -111,7 +119,11 @@ namespace AppStore
                 if (ex.IsTimeout) throw new IOException("The connection timed out");
                 throw new IOException(ex.Message);
             }
+            return r;
+        }
 
+        static void CheckRateLimit(HttpsResponse r)
+        {
             if ((r.Status == 403 || r.Status == 429) && r.Header("x-ratelimit-remaining") == "0")
             {
                 string when = "";
@@ -124,7 +136,6 @@ namespace AppStore
                 catch (Exception) { }
                 throw new IOException("GitHub's limit of 60 requests an hour was reached." + when);
             }
-            return r;
         }
 
         public static string GetText(string url, out int status)

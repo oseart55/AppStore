@@ -29,6 +29,7 @@ connection, so it works on devices that can't otherwise reach GitHub at all.
 - [Publishing an app](#publishing-an-app)
 - [How installs, updates and removal work](#how-installs-updates-and-removal-work)
 - [Settings (store.cfg)](#settings-storecfg)
+- [Sending logs (logs.cfg)](#sending-logs-logscfg)
 - [Troubleshooting](#troubleshooting)
 - [Limitations, and why](#limitations-and-why)
 - [Building](#building)
@@ -137,6 +138,7 @@ again. `AppStoreSetup.exe /quiet` skips the questions but still reports errors.
 | **Menu → Open** | Start the app. |
 | **Menu → Release notes** | What's new in the latest release. |
 | **Menu → Show log** | The last 40 log lines (`AppStore-log.txt`, next to `AppStore.exe`). |
+| **Menu → Send logs** | Upload new or changed log files to your private GitHub repo. See [Sending logs](#sending-logs-logscfg). |
 | **Menu → About** | Version, catalog, install folder. |
 
 Apps that are installed but no longer in the catalog stay in the list, so you
@@ -185,6 +187,7 @@ everything else is optional:
 | `install` | | Arguments to run the exe with after every install or update. |
 | `uninstall` | | Arguments to run the exe with before uninstalling. |
 | `keep` | | Files never overwritten once they exist (wildcards work). Use for settings the user edits. |
+| `logs` | | Log files the app writes in its folder (wildcards work), for **Send logs**. |
 
 Folder, exe and shortcut names must be plain names: no `\`, `/`, `..` or
 wildcards. App Store skips entries that break this, and entries with an invalid
@@ -261,6 +264,34 @@ redirect to. **Never put a token in a release or a public repository.**
 
 ---
 
+## Sending logs (logs.cfg)
+
+**Menu → Send logs** uploads log files to a GitHub repository, so they don't
+have to be copied off the device by hand. It sends App Store's own log plus
+each installed app's `logs` files from the catalog. A file is only sent again
+once it has changed. Files bigger than 1 MB send their last 1 MB.
+
+Logs contain device details and the names of the servers the device talks to,
+so use a **private** repository. Set it up once:
+
+1. Create a private repo, e.g. `gh repo create oseart55/MC55A-Logs --private --add-readme`.
+2. Make a fine-grained token: GitHub → Settings → Developer settings →
+   Personal access tokens → Fine-grained tokens. Give it access to **only that
+   repository**, with **Contents: Read and write** and nothing else.
+3. Put a `logs.cfg` text file next to `AppStore.exe`:
+
+```
+repo=oseart55/MC55A-Logs
+token=github_pat_...
+device=MC55A-1        optional; the folder name in the repo (default: the device name)
+```
+
+Uploads go to `{device}/{date}/{time}-{app}-{file}`. The token is only sent to
+`api.github.com`. **Never put `logs.cfg` in a release or a repository**; if a
+device is lost, delete the token on GitHub.
+
+---
+
 ## Troubleshooting
 
 | Problem | Fix |
@@ -270,6 +301,8 @@ redirect to. **Never put a token in a release or a public repository.**
 | *"The date on this device is wrong…"* / certificate errors | Connect to Wi-Fi and use **Menu → Refresh**, which sets the clock. Or set the date and time in Settings, then Refresh. |
 | Clock still not set automatically | **Menu → Show log** and look for the line starting with `Clock`: it says which time server failed and why. Some networks block internet time (UDP port 123). |
 | *"GitHub's limit of 60 requests an hour was reached"* | Wait for the time shown, or add a `token` to `store.cfg`. |
+| Send logs: *"GitHub didn't accept the token"* | The token in `logs.cfg` is wrong or has expired. Make a new one. |
+| Send logs: *"The token can't write to …"* | Check the repo name, and that the token is for that repo with Contents: read and write. |
 | *"… is running. Close it, then try again."* | Close the app and try again. |
 | An app shows `?` under Latest | Its repository has no release yet, or GitHub couldn't be reached. The text below the list says which. |
 | Setup: *"CF 3.5 … didn't finish"* | Soft-reset and run the setup again. If it still fails, install `NETCFv35.wm.armv4i.cab` by hand, then run the setup again. |

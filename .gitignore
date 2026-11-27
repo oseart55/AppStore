@@ -23,3 +23,10 @@ release_files/
 *.old
 *.bak
 *.orig
+
+# Device-side settings and logs: never commit (tokens, device details)
+logs.cfg
+logs.sent
+store.cfg
+*-log.txt
+*-log.old.txt

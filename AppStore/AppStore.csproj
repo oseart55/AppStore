@@ -60,6 +60,7 @@
     <Compile Include="Embedded.cs" />
     <Compile Include="Installer.cs" />
     <Compile Include="Log.cs" />
+    <Compile Include="LogUpload.cs" />
     <Compile Include="MiniJson.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
